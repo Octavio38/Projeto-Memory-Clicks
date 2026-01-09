@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Clicks - Memória de Fotografia de Oct</title>
+    
+    <link rel="icon" type="image/png" href="Logonavegador.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #0f0f0f; color: #ffffff; overflow-x: hidden; }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #84cc16, #10b981, #84cc16);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-shift 3s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .photo-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(132, 204, 22, 0.1);
+        }
+
+        .photo-card:hover {
+            transform: translateY(-5px);
+            border-color: #84cc16;
+            box-shadow: 0 10px 30px -10px rgba(132, 204, 22, 0.3);
+        }
+
+        .modal-image-container {
+            max-height: 60vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        .modal-image-container img {
+            max-height: 60vh;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #84cc16; }
+
+        .logo-img {
+            height: 60px;
+            width: auto;
+            transition: transform 0.3s ease;
+        }
+        
+        @media (max-width: 640px) {
+            .logo-img { height: 32px; }
+            h2 { font-size: 1.875rem !important; line-height: 1.2; }
+            .modal-image-container { max-height: 40vh; }
+            .photo-card { margin-bottom: 0.5rem; }
+        }
+    </style>
+</head>
+<body class="bg-[#0f0f0f]">
+
+    <header class="sticky top-0 z-50 bg-[#1a1a1a]/95 border-b border-lime-500/20 backdrop-blur-md">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="javascript:void(0)" onclick="window.location.reload()" class="flex items-center">
+                <img src="logo.png" alt="EventShot Logo" class="logo-img">
+            </a>
+
+            <button onclick="openModal('aboutModal')" class="flex items-center gap-2 bg-lime-500 hover:bg-lime-400 text-black font-bold px-4 md:px-6 py-2 md:py-2.5 rounded-full transition-all hover:scale-105">
+    <i data-lucide="user" class="w-5 h-5"></i>
+    <span class="hidden sm:inline">Sobre mim</span>
+</button>
+
+        </div>
+    </header>
+
+    <section class="py-12 md:py-20 px-4">
+        <div class="container mx-auto max-w-4xl text-center">
+            <h2 class="text-4xl md:text-6xl font-black mb-6 leading-tight">
+               Minhas fotos de <span class="gradient-text">alta performance</span>
+            </h2>
+            <div class="bg-[#1a1a1a] rounded-2xl p-2 flex flex-col md:flex-row gap-2 max-w-2xl mx-auto border border-lime-500/20 shadow-2xl">
+                <input type="text" id="searchInput" placeholder="Busque por Nome ou Paisagem..." class="flex-1 bg-transparent px-6 py-4 text-white outline-none text-lg">
+                <button id="searchBtn" class="bg-lime-500 hover:bg-lime-400 text-black font-bold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="search" class="w-5 h-5"></i> Buscar
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <main class="container mx-auto px-4 pb-20">
+        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+        <div id="noResults" class="hidden text-center py-20">
+            <i data-lucide="camera-off" class="w-16 h-16 mx-auto mb-4 text-gray-600"></i>
+            <p class="text-xl text-gray-500">Nenhuma foto encontrada para essa busca.</p>
+        </div>
+    </main>
+
+    <div id="photoModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-[#1a1a1a] rounded-3xl max-w-2xl w-full overflow-hidden border border-white/10 shadow-2xl">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="modalTitle" class="text-xl font-bold truncate pr-4 text-white">Título da Foto</h3>
+                    <button onclick="closeModal('photoModal')" class="p-2 text-white hover:bg-white/10 rounded-full transition"><i data-lucide="x"></i></button>
+                </div>
+                <div class="modal-image-container relative mb-6 bg-black">
+                    <img id="modalImage" src="" alt="">
+                </div>
+                <div class="space-y-4">
+    <p id="photoLocation" class="text-sm uppercase tracking-widest text-lime-500 font-bold">
+        Local não informado
+    </p>
+
+    <p id="photoDescription" class="text-gray-300 leading-relaxed text-sm">
+        Essa foto foi tirada por um motivo especial.
+    </p>
+</div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="cartModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-[#1a1a1a] rounded-3xl max-w-md w-full overflow-hidden border border-white/10 shadow-2xl">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-white">Meu Carrinho</h3>
+                    <button onclick="closeModal('cartModal')" class="p-2 text-white hover:bg-white/10 rounded-full transition"><i data-lucide="x"></i></button>
+                </div>
+                <div id="cartItems" class="space-y-4 max-h-[40vh] overflow-y-auto mb-6 pr-2"></div>
+                <div id="cartEmptyMsg" class="text-center py-8 text-gray-500 hidden">Seu carrinho está vazio.</div>
+                <div id="cartFooter" class="border-t border-white/10 pt-6">
+                    <div class="flex justify-between items-end mb-6">
+                        <span class="text-gray-400">Total do pedido</span>
+                        <span id="cartTotal" class="text-3xl font-black text-lime-500">R$ 0,00</span>
+                    </div>
+                    <button id="checkoutBtn" onclick="processCheckout()" class="w-full bg-lime-500 hover:bg-lime-400 text-black font-black py-4 rounded-2xl flex items-center justify-center gap-2 transition-all">
+                        FINALIZAR COMPRA <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="successModal" class="hidden fixed inset-0 z-[70] modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white text-black rounded-3xl max-w-sm w-full p-5 md:p-8 text-center shadow-2xl max-h-[95vh] overflow-y-auto">
+            <div class="w-16 h-16 bg-lime-100 text-lime-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="check-check" class="w-8 h-8"></i>
+            </div>
+            
+            <h3 class="text-xl md:text-2xl font-black mb-1">Pedido Gerado!</h3>
+            <p class="text-gray-600 mb-4 text-xs md:text-sm">Escaneie o QR Code abaixo para pagar via PIX.</p>
+            
+            <div class="bg-gray-100 p-3 md:p-4 rounded-2xl mb-4">
+                <img src="https://i.postimg.cc/WzrLg5sB/qrcode.jpg" alt="QR Code" class="mx-auto w-32 h-32 md:w-48 md:h-48 rounded-lg mb-3">
+                <p class="text-[10px] text-gray-400 mb-1 uppercase font-bold tracking-widest">Chave PIX (Telefone)</p>
+                <p class="font-mono font-bold text-sm md:text-base">(85) 98682-8548</p>
+            </div>
+            
+            <div class="space-y-2">
+                <button onclick="copyPix()" class="w-full bg-black text-white py-3 md:py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition active:scale-95">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copiar Chave
+                </button>
+                
+                <button onclick="sendWhatsAppMessage()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 md:py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition active:scale-95">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i> Enviar Comprovante
+                </button>
+            </div>
+            
+            <button onclick="closeModal('successModal')" class="mt-4 text-gray-400 text-xs font-medium hover:text-black transition">Fechar Janela</button>
+        </div>
+    </div>
+<div id="aboutModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-[#1a1a1a] rounded-3xl max-w-4xl w-full overflow-hidden border border-white/10 shadow-2xl">
+        <div class="p-6 md:p-10">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl md:text-3xl font-black text-white">Sobre mim</h3>
+                <button onclick="closeModal('aboutModal')" class="p-2 text-white hover:bg-white/10 rounded-full transition">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                
+                <!-- Texto -->
+                <div>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Sou fotógrafo apaixonado por capturar momentos reais, intensos e cheios de significado.
+                        Cada clique é uma memória congelada no tempo, feita pra durar.
+                    </p>
+                    <p class="text-gray-400 leading-relaxed">
+                        Meu foco é transformar cenas simples em imagens fortes, com identidade, emoção
+                        e estética limpa. Aqui não tem foto comum. Tem história.
+                    </p>
+                </div>
+
+                <!-- Imagem -->
+                <div class="flex justify-center">
+                    <img 
+                        src="Minha foto.jpg" 
+                        alt="Minha foto" 
+                        class="rounded-2xl max-h-[320px] object-cover border border-lime-500/30 shadow-xl"
+                    >
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTArOAXZETdf0cdCERUje5ypghJd-Ekv5wXhX2HclHHulEEGvsL6hLJZCAHPwEjXDW5BRwcOLLxBcgf/pub?output=csv';
+        let allPhotos = [];
+        let cart = [];
+        let selectedPhoto = null;
+
+        async function init() {
+            try {
+                const response = await fetch(CSV_URL);
+                const data = await response.text();
+                allPhotos = parseCSV(data);
+                renderGallery(allPhotos);
+            } catch (error) {
+                console.error("Erro ao carregar dados:", error);
+            }
+            lucide.createIcons();
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n').slice(1);
+            return lines.filter(line => line.trim() !== "").map((line, index) => {
+                const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/"/g, '').trim());
+                return {
+                    id: index,
+                    url: cols[1] || '',
+                    event: cols[2] || 'Paisagem',
+                    code: cols[3] || '000',
+                    athlete: cols[4] || 'Nome',
+                    location: cols[5] || 'Local não informado',
+                    description: cols[6] || 'Essa memória ainda não foi descrita.'
+
+                };
+            });
+        }
+
+        function renderGallery(photos) {
+            const container = document.getElementById('gallery');
+            const noResults = document.getElementById('noResults');
+            if (photos.length === 0) {
+                container.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+            noResults.classList.add('hidden');
+            container.innerHTML = photos.map(photo => `
+                <div class="photo-card bg-[#1a1a1a] rounded-2xl overflow-hidden cursor-pointer" onclick="openPhoto(${photo.id})">
+                    <div class="aspect-[4/5] relative">
+                        <img src="${photo.url}" class="w-full h-full object-cover" loading="lazy">
+                    </div>
+                    <div class="p-4">
+                        <p class="text-xs text-lime-500 font-bold uppercase tracking-wider mb-1">${photo.event}</p>
+                        <h4 class="font-bold text-white truncate">${photo.athlete} (#${photo.code})</h4>
+                        <p class="text-gray-400 text-sm mt-2">Clique para ver a memória</p>
+
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openPhoto(id) {
+            selectedPhoto = allPhotos.find(p => p.id === id);
+            document.getElementById('modalTitle').innerText = `${selectedPhoto.athlete} - #${selectedPhoto.code}`;
+            document.getElementById('modalImage').src = selectedPhoto.url;
+            document.getElementById('photoLocation').innerText = selectedPhoto.location;
+document.getElementById('photoDescription').innerText = selectedPhoto.description;
+
+            openModal('photoModal');
+        }
+
+        function addToCart(option) {
+            const type = option === 1 ? 'Digital' : 'Alta Resolução';
+            const price = option === 1 ? selectedPhoto.price1 : selectedPhoto.price2;
+            
+            cart.push({ 
+                ...selectedPhoto, 
+                cartId: Date.now(), 
+                selectedType: type, 
+                selectedPrice: price 
+            });
+            
+            updateCartUI();
+            closeModal('photoModal');
+            openModal('cartModal');
+        }
+
+        function removeFromCart(cartId) {
+            cart = cart.filter(item => item.cartId !== cartId);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cartItems');
+            const count = document.getElementById('cartCount');
+            const total = document.getElementById('cartTotal');
+            count.innerText = cart.length;
+            
+            if (cart.length === 0) {
+                container.innerHTML = '';
+                document.getElementById('cartEmptyMsg').classList.remove('hidden');
+                document.getElementById('cartFooter').classList.add('opacity-50', 'pointer-events-none');
+                total.innerText = 'R$ 0,00';
+            } else {
+                document.getElementById('cartEmptyMsg').classList.add('hidden');
+                document.getElementById('cartFooter').classList.remove('opacity-50', 'pointer-events-none');
+                let sum = 0;
+                container.innerHTML = cart.map(item => {
+                    sum += item.selectedPrice;
+                    return `
+                        <div class="flex gap-4 bg-white/5 p-3 rounded-xl items-center border border-white/5">
+                            <img src="${item.url}" class="w-16 h-16 object-cover rounded-lg">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-bold text-sm text-white truncate">${item.athlete}</h4>
+                                <p class="text-xs text-gray-500">${item.selectedType}</p>
+                                <p class="text-lime-500 font-bold text-sm">R$ ${item.selectedPrice.toFixed(2).replace('.', ',')}</p>
+                            </div>
+                            <button onclick="removeFromCart(${item.cartId})" class="text-gray-600 hover:text-red-500 p-2">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+                total.innerText = `R$ ${sum.toFixed(2).replace('.', ',')}`;
+                lucide.createIcons();
+            }
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+
+        function processCheckout() {
+            closeModal('cartModal');
+            openModal('successModal');
+        }
+
+        function copyPix() {
+            navigator.clipboard.writeText('(85) 98682-8548');
+            alert('Chave PIX copiada!');
+        }
+
+        function sendWhatsAppMessage() {
+            if (cart.length === 0) {
+                alert("Seu carrinho está vazio!");
+                return;
+            }
+            const itensTexto = cart.map(item => `- ${item.athlete} (#${item.code}) [${item.selectedType}]`).join('%0A');
+            const total = document.getElementById('cartTotal').innerText;
+            const telefone = "5585986828548";
+            const mensagem = `Olá! Comprei as fotos abaixo e aqui está o comprovante:%0A%0A${itensTexto}%0A%0A*Total:* ${total}`;
+            window.location.href = `https://wa.me/${telefone}?text=${mensagem}`;
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allPhotos.filter(p => 
+                p.athlete.toLowerCase().includes(term) || 
+                p.event.toLowerCase().includes(term) || 
+                p.code.toLowerCase().includes(term)
+            );
+            renderGallery(filtered);
+        });
+
+        init();
+    </script>
+</body>
+</html>
