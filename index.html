@@ -85,7 +85,7 @@
     <header class="sticky top-0 z-50 bg-[#1a1a1a]/95 border-b border-lime-500/20 backdrop-blur-md">
         <div class="container mx-auto px-4 py-3 flex items-center justify-between">
             <a href="javascript:void(0)" onclick="window.location.reload()" class="flex items-center">
-                <img src="/img/fotografo.png" alt="EventShot Logo" class="logo-img">
+                <img src="img/fotografo.png" alt="Memory Clicks" class="logo-img">
             </a>
 
             <button onclick="openModal('aboutModal')" class="flex items-center gap-2 bg-lime-500 hover:bg-lime-400 text-black font-bold px-4 md:px-6 py-2 md:py-2.5 rounded-full transition-all hover:scale-105">
@@ -141,57 +141,6 @@
             </div>
         </div>
     </div>
-
-    <div id="cartModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center p-4">
-        <div class="bg-[#1a1a1a] rounded-3xl max-w-md w-full overflow-hidden border border-white/10 shadow-2xl">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-white">Meu Carrinho</h3>
-                    <button onclick="closeModal('cartModal')" class="p-2 text-white hover:bg-white/10 rounded-full transition"><i data-lucide="x"></i></button>
-                </div>
-                <div id="cartItems" class="space-y-4 max-h-[40vh] overflow-y-auto mb-6 pr-2"></div>
-                <div id="cartEmptyMsg" class="text-center py-8 text-gray-500 hidden">Seu carrinho está vazio.</div>
-                <div id="cartFooter" class="border-t border-white/10 pt-6">
-                    <div class="flex justify-between items-end mb-6">
-                        <span class="text-gray-400">Total do pedido</span>
-                        <span id="cartTotal" class="text-3xl font-black text-lime-500">R$ 0,00</span>
-                    </div>
-                    <button id="checkoutBtn" onclick="processCheckout()" class="w-full bg-lime-500 hover:bg-lime-400 text-black font-black py-4 rounded-2xl flex items-center justify-center gap-2 transition-all">
-                        FINALIZAR COMPRA <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="successModal" class="hidden fixed inset-0 z-[70] modal-backdrop flex items-center justify-center p-4">
-        <div class="bg-white text-black rounded-3xl max-w-sm w-full p-5 md:p-8 text-center shadow-2xl max-h-[95vh] overflow-y-auto">
-            <div class="w-16 h-16 bg-lime-100 text-lime-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i data-lucide="check-check" class="w-8 h-8"></i>
-            </div>
-            
-            <h3 class="text-xl md:text-2xl font-black mb-1">Pedido Gerado!</h3>
-            <p class="text-gray-600 mb-4 text-xs md:text-sm">Escaneie o QR Code abaixo para pagar via PIX.</p>
-            
-            <div class="bg-gray-100 p-3 md:p-4 rounded-2xl mb-4">
-                <img src="https://i.postimg.cc/WzrLg5sB/qrcode.jpg" alt="QR Code" class="mx-auto w-32 h-32 md:w-48 md:h-48 rounded-lg mb-3">
-                <p class="text-[10px] text-gray-400 mb-1 uppercase font-bold tracking-widest">Chave PIX (Telefone)</p>
-                <p class="font-mono font-bold text-sm md:text-base">(85) 98682-8548</p>
-            </div>
-            
-            <div class="space-y-2">
-                <button onclick="copyPix()" class="w-full bg-black text-white py-3 md:py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition active:scale-95">
-                    <i data-lucide="copy" class="w-4 h-4"></i> Copiar Chave
-                </button>
-                
-                <button onclick="sendWhatsAppMessage()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 md:py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition active:scale-95">
-                    <i data-lucide="message-circle" class="w-4 h-4"></i> Enviar Comprovante
-                </button>
-            </div>
-            
-            <button onclick="closeModal('successModal')" class="mt-4 text-gray-400 text-xs font-medium hover:text-black transition">Fechar Janela</button>
-        </div>
-    </div>
 <div id="aboutModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[#1a1a1a] rounded-3xl max-w-4xl w-full overflow-hidden border border-white/10 shadow-2xl">
         <div class="p-6 md:p-10">
@@ -212,14 +161,14 @@
                     </p>
                     <p class="text-gray-400 leading-relaxed">
                         Meu foco é transformar cenas simples em imagens fortes, com identidade, emoção
-                        e estética limpa. Aqui não tem foto comum. Tem história.
+                        e estética limpa.
                     </p>
                 </div>
 
                 <!-- Imagem -->
                 <div class="flex justify-center">
                     <img 
-                        src="IMG-20260119-WA0084 (1).jpg" 
+                        src="img/OriginalSobreMim.jpg" 
                         alt="Minha foto" 
                         class="rounded-2xl max-h-[320px] object-cover border border-lime-500/30 shadow-xl"
                     >
