@@ -129,6 +129,7 @@
                     <img id="modalImage" src="" alt="">
                 </div>
                 <div class="space-y-4">
+
     <p id="photoLocation" class="text-sm uppercase tracking-widest text-lime-500 font-bold">
         Local não informado
     </p>
@@ -136,6 +137,54 @@
     <p id="photoDescription" class="text-gray-300 leading-relaxed text-sm">
         Essa foto foi tirada por um motivo especial.
     </p>
+
+    <div id="animalInfo" class="hidden bg-black/20 rounded-xl p-5 border border-lime-500/20">
+
+        <h4 class="text-lime-500 text-lg font-bold mb-4">
+            Informações da Espécie
+        </h4>
+
+        <div class="grid gap-2 text-sm text-gray-300">
+
+            <div>
+                <span class="font-bold text-white">Nome Popular:</span>
+                <span id="animalPopular"></span>
+            </div>
+
+            <div>
+                <span class="font-bold text-white">Nome Científico:</span>
+                <em id="animalScientific" class="text-gray-300"></em>
+            </div>
+
+            <div>
+                <span class="font-bold text-white">Tamanho/Peso:</span>
+                <span id="animalSize"></span>
+            </div>
+
+            <div>
+                <span class="font-bold text-white">Habitat:</span>
+                <span id="animalHabitat"></span>
+            </div>
+
+            <div>
+                <span class="font-bold text-white">Dieta:</span>
+                <span id="animalDiet"></span>
+            </div>
+
+            <div>
+                <span class="font-bold text-white">Estado de Conservação:</span>
+                <span id="animalConservation"></span>
+            </div>
+
+            <div>
+                <span class="font-bold text-white">Curiosidade:</span>
+                <span id="animalFact"></span>
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
             </div>
@@ -197,21 +246,36 @@
         }
 
         function parseCSV(text) {
-            const lines = text.split('\n').slice(1);
-            return lines.filter(line => line.trim() !== "").map((line, index) => {
-                const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/"/g, '').trim());
-                return {
-                    id: index,
-                    url: cols[1] || '',
-                    event: cols[2] || 'Paisagem',
-                    code: cols[3] || '000',
-                    athlete: cols[4] || 'Nome',
-                    location: cols[5] || 'Local não informado',
-                    description: cols[6] || 'Essa memória ainda não foi descrita.'
+    const lines = text.split('\n').slice(1);
 
-                };
-            });
-        }
+    return lines
+        .filter(line => line.trim() !== "")
+        .map((line, index) => {
+
+            const cols = line
+                .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+                .map(c => c.replace(/"/g, '').trim());
+
+            return {
+                id: index,
+
+                url: cols[1] || '',
+                event: cols[2] || 'Paisagem',
+                code: cols[3] || '000',
+                athlete: cols[4] || 'Nome',
+                location: cols[5] || 'Local não informado',
+                description: cols[6] || '',
+
+                popularName: cols[7] || '',
+                scientificName: cols[8] || '',
+                sizeWeight: cols[9] || '',
+                habitat: cols[10] || '',
+                diet: cols[11] || '',
+                conservation: cols[12] || '',
+                fact: cols[13] || ''
+            };
+        });
+}
 
         function renderGallery(photos) {
             const container = document.getElementById('gallery');
@@ -238,14 +302,60 @@
         }
 
         function openPhoto(id) {
-            selectedPhoto = allPhotos.find(p => p.id === id);
-            document.getElementById('modalTitle').innerText = `${selectedPhoto.athlete} - #${selectedPhoto.code}`;
-            document.getElementById('modalImage').src = selectedPhoto.url;
-            document.getElementById('photoLocation').innerText = selectedPhoto.location;
-document.getElementById('photoDescription').innerText = selectedPhoto.description;
 
-            openModal('photoModal');
-        }
+    selectedPhoto = allPhotos.find(p => p.id === id);
+
+    document.getElementById('modalTitle').innerText =
+        `${selectedPhoto.athlete} - #${selectedPhoto.code}`;
+
+    document.getElementById('modalImage').src =
+        selectedPhoto.url;
+
+    document.getElementById('photoLocation').innerText =
+        selectedPhoto.location;
+
+    document.getElementById('photoDescription').innerText =
+        selectedPhoto.description;
+
+    const animalInfo =
+        document.getElementById('animalInfo');
+
+    if (
+        selectedPhoto.event &&
+        selectedPhoto.event.toLowerCase() === 'animal'
+    ) {
+
+        animalInfo.classList.remove('hidden');
+
+        document.getElementById('animalPopular').innerText =
+            selectedPhoto.popularName || '-';
+
+        document.getElementById('animalScientific').innerText =
+            selectedPhoto.scientificName || '-';
+
+        document.getElementById('animalSize').innerText =
+            selectedPhoto.sizeWeight || '-';
+
+        document.getElementById('animalHabitat').innerText =
+            selectedPhoto.habitat || '-';
+
+        document.getElementById('animalDiet').innerText =
+            selectedPhoto.diet || '-';
+
+        document.getElementById('animalConservation').innerText =
+            selectedPhoto.conservation || '-';
+
+        document.getElementById('animalFact').innerText =
+            selectedPhoto.fact || '-';
+
+    } else {
+
+        animalInfo.classList.add('hidden');
+
+    }
+
+    openModal('photoModal');
+}
 
         function addToCart(option) {
             const type = option === 1 ? 'Digital' : 'Alta Resolução';
